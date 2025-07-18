@@ -1,0 +1,112 @@
+         PRINT NOGEN                                                    00010001
+OZA128R  DFHMSD TYPE=&SYSPARM,TIOAPFX=YES,LANG=COBOL,MODE=INOUT,       X00020003
+               STORAGE=AUTO,CTRL=(FREEKB,FRSET),MAPATTS=COLOR,         X00030001
+               DSATTS=COLOR                                             00031001
+MPAGE    DFHMDI SIZE=(24,80),LINE=1,COLUMN=1                            00032001
+         DFHMDF POS=(05,30),LENGTH=22,INITIAL='EMPLOYEE SWIPE SYSTEM', X00033001
+               ATTRB=(PROT,NORM)                                        00034001
+         DFHMDF POS=(06,30),LENGTH=22,INITIAL='*********************', X00035001
+               ATTRB=(PROT,NORM)                                        00036001
+         DFHMDF POS=(08,10),LENGTH=10,INITIAL='OPTIONS: ',             X00037001
+               ATTRB=(PROT,NORM)                                        00038001
+         DFHMDF POS=(11,30),LENGTH=13,INITIAL='1.SWIPE IN. ',          X00039001
+               ATTRB=(PROT,NORM)                                        00040001
+         DFHMDF POS=(13,30),LENGTH=14,INITIAL='2.SWIPE OUT. ',         X00050001
+               ATTRB=(PROT,NORM)                                        00060001
+         DFHMDF POS=(15,30),LENGTH=18,INITIAL='3.NEW REGISTRATION',    X00061011
+               ATTRB=(PROT,NORM)                                        00062001
+         DFHMDF POS=(17,30),LENGTH=09,INITIAL='4.EXIT. ',              X00070006
+               ATTRB=(PROT,NORM)                                        00080001
+         DFHMDF POS=(20,05),LENGTH=17,INITIAL='ENTER THE OPTION:',     X00090008
+               ATTRB=(PROT,NORM)                                        00100001
+OPTION   DFHMDF POS=(20,23),LENGTH=02,INITIAL='_',                     X00110008
+               ATTRB=(UNPROT,NORM,IC),PICIN='X(2)',PICOUT='X(2)'        00120001
+         DFHMDF POS=(23,05),LENGTH=10,INITIAL='MESSAGE:',              X00130001
+               ATTRB=(PROT,NORM)                                        00140001
+MSG1     DFHMDF POS=(23,17),LENGTH=23,INITIAL='_________________',     X00150001
+               ATTRB=(PROT,NORM),PICOUT='X(23)'                         00160001
+LGON     DFHMDI SIZE=(24,80),LINE=1,COLUMN=1                            00170001
+HEAD2    DFHMDF POS=(03,04),LENGTH=21,INITIAL='SWIPED IN SUCCESSFUL',  X00180001
+               ATTRB=(PROT,NORM),COLOR=YELLOW                           00190001
+         DFHMDF POS=(05,04),LENGTH=08,INITIAL='EMPID :',               X00200001
+               ATTRB=(PROT,NORM)                                        00210001
+EMPID    DFHMDF POS=(05,15),LENGTH=07,INITIAL='______',                X00220001
+               ATTRB=(PROT,NORM)                                        00230001
+         DFHMDF POS=(07,04),LENGTH=10,INITIAL='EMP NAME:',             X00240001
+               ATTRB=(PROT,NORM)                                        00250001
+EMPNAME  DFHMDF POS=(07,15),LENGTH=23,INITIAL='                 ',     X00260001
+               ATTRB=(PROT,NORM)                                        00270001
+         DFHMDF POS=(09,04),LENGTH=06,INITIAL='DATE:',                 X00280001
+               ATTRB=(PROT,NORM)                                        00290001
+DATE1    DFHMDF POS=(09,15),LENGTH=13,INITIAL='           ',           X00290101
+               ATTRB=(PROT,NORM)                                        00290201
+         DFHMDF POS=(11,04),LENGTH=05,INITIAL='TIME:',                 X00290301
+               ATTRB=(PROT,NORM)                                        00290401
+TIME1    DFHMDF POS=(11,15),LENGTH=10,INITIAL='          ',            X00290501
+               ATTRB=(PROT,NORM)                                        00290601
+         DFHMDF POS=(15,04),LENGTH=17,INITIAL='ENTER Y TO EXIT:',      X00290701
+               ATTRB=(PROT,NORM)                                        00290801
+RETURN   DFHMDF POS=(15,22),LENGTH=01,INITIAL='_',                     X00290901
+               ATTRB=(UNPROT,NORM),PICIN='X(01)',PICOUT='X(01)'         00291001
+SWIN     DFHMDI SIZE=(24,80),LINE=1,COLUMN=1                            00291101
+HEAD1    DFHMDF POS=(03,38),LENGTH=10,INITIAL='SWIPE IN',              X00291201
+               ATTRB=(PROT,NORM)                                        00291301
+         DFHMDF POS=(05,35),LENGTH=14,INITIAL='ENTER DETAILS',         X00291401
+               ATTRB=(PROT,NORM)                                        00291501
+         DFHMDF POS=(08,15),LENGTH=07,INITIAL='EMPID: ',               X00291601
+               ATTRB=(PROT,NORM)                                        00291701
+EID      DFHMDF POS=(08,25),LENGTH=06,INITIAL='______',                X00291801
+               ATTRB=(UNPROT,NORM,IC),PICIN='X(06)',PICOUT='X(06)'      00291901
+         DFHMDF POS=(09,15),LENGTH=07,INITIAL='NAME:  ',               X00292001
+               ATTRB=(PROT,NORM)                                        00293001
+NAME     DFHMDF POS=(09,25),LENGTH=20,INITIAL='_______________',       X00294001
+               ATTRB=(UNPROT,NORM),PICIN='X(20)',PICOUT='X(20)'         00295001
+         DFHMDF POS=(23,05),LENGTH=10,INITIAL='MESSAGE:',              X00296001
+               ATTRB=(PROT,NORM)                                        00297001
+MSG2     DFHMDF POS=(23,17),LENGTH=23,INITIAL='_________________',     X00297101
+               ATTRB=(PROT,NORM)                                        00297201
+REG      DFHMDI SIZE=(24,80),LINE=1,COLUMN=1                            00297301
+REGH     DFHMDF POS=(05,30),LENGTH=18,INITIAL='ENTER THE DETAILS',     X00297401
+               ATTRB=(PROT,NORM)                                        00297501
+         DFHMDF POS=(07,25),LENGTH=17,INITIAL='EMP ID          :',     X00297607
+               ATTRB=(PROT,NORM)                                        00297701
+EMPIDR   DFHMDF POS=(07,43),LENGTH=06,INITIAL='______',                X00297808
+               ATTRB=(UNPROT,NORM,IC),PICIN='X(06)',PICOUT='X(06)'      00297901
+         DFHMDF POS=(09,25),LENGTH=17,INITIAL='NAME            :',     X00298007
+               ATTRB=(PROT,NORM)                                        00298107
+NAMER    DFHMDF POS=(09,43),LENGTH=20,INITIAL='___________________',   X00298208
+               ATTRB=(UNPROT,NORM),PICIN='X(20)',PICOUT='X(20)'         00298301
+         DFHMDF POS=(11,25),LENGTH=17,INITIAL='PHONE NO.       :',     X00298407
+               ATTRB=(PROT,NORM)                                        00298501
+PHONER   DFHMDF POS=(11,43),LENGTH=10,INITIAL='__________',            X00298608
+               ATTRB=(UNPROT,NORM),PICIN='X(10)',PICOUT='X(10)'         00298702
+         DFHMDF POS=(14,25),LENGTH=17,INITIAL='DATE OF BIRTH   :',     X00298907
+               ATTRB=(PROT,NORM)                                        00299002
+DOBR     DFHMDF POS=(14,43),LENGTH=10,INITIAL='__________',            X00299108
+               ATTRB=(UNPROT,NORM),PICIN='X(10)',PICOUT='X(10)'         00299202
+         DFHMDF POS=(16,25),LENGTH=17,INITIAL='DATE OF JOINING :',     X00299307
+               ATTRB=(PROT,NORM)                                        00299402
+DOJR     DFHMDF POS=(16,43),LENGTH=10,INITIAL='__________',            X00299508
+               ATTRB=(UNPROT,NORM),PICIN='X(10)',PICOUT='X(10)'         00299602
+         DFHMDF POS=(20,05),LENGTH=16,INITIAL='ENTER Y TO EXIT:',      X00299712
+               ATTRB=(PROT,NORM)                                        00299812
+EXR      DFHMDF POS=(20,22),LENGTH=01,INITIAL='_',                     X00299912
+               ATTRB=(UNPROT,NORM),PICIN='X(01)',PICOUT='X(01)'         00300012
+         DFHMDF POS=(23,05),LENGTH=08,INITIAL='MESSAGE:',              X00300112
+               ATTRB=(PROT,NORM)                                        00300212
+RM1      DFHMDF POS=(23,15),LENGTH=25,INITIAL='________________',      X00300312
+               ATTRB=(PROT,NORM)                                        00300412
+REGM     DFHMDI SIZE=(24,80),LINE=1,COLUMN=1                            00300504
+         DFHMDF POS=(10,30),LENGTH=19,INITIAL='EMPLOYEE NOT EXIST',    X00300604
+               ATTRB=(PROT,NORM)                                        00300710
+         DFHMDF POS=(15,25),LENGTH=29,                                 X00300809
+               INITIAL='ENTER Y FOR NEW REGISTRATION:',                X00300904
+               ATTRB=(PROT,NORM)                                        00301004
+RM       DFHMDF POS=(15,55),LENGTH=01,INITIAL='_',                     X00301109
+               ATTRB=(UNPROT,NORM),PICIN='X(01)',PICOUT='X(01)'         00301204
+EXIT     DFHMDI SIZE=(24,80),LINE=1,COLUMN=1                            00301301
+         DFHMDF POS=(12,30),LENGTH=13,INITIAL='SYSTEM ENDED',          X00301402
+               ATTRB=(PROT,NORM)                                        00301501
+         DFHMSD TYPE=FINAL                                              00302001
+               END                                                      00310001
+

@@ -1,0 +1,44 @@
+       IDENTIFICATION DIVISION.                                         00010000
+       PROGRAM-ID. ERR.                                                 00020000
+       DATA DIVISION.                                                   00030000
+       WORKING-STORAGE SECTION.                                         00040000
+           COPY OZA128R.                                                00050000
+           COPY DFHBMSCA.                                               00060000
+           COPY DFHAID.                                                 00070000
+       LINKAGE SECTION.                                                 00076000
+       01 DFHCOMMAREA.                                                  00077000
+          10 LS-TRANSID     PIC X(04).                                  00078000
+       PROCEDURE DIVISION.                                              00079000
+       MAIN-PARA.                                                       00080000
+           MOVE LOW-VALUES TO REGMI REGMO.                              00090000
+           PERFORM 1000-SEND-PARA                                       00100000
+           THRU    1000-SEND-END.                                       00110000
+           PERFORM 2000-RECEIVE-PARA                                    00120000
+           THRU    2000-RECEIVE-END.                                    00130000
+           PERFORM 9999-END-PARA                                        00131000
+           THRU    9999-END.                                            00132000
+       1000-SEND-PARA.                                                  00140000
+           EXEC CICS SEND                                               00150000
+                MAP('REGM')                                             00160000
+                MAPSET('OZA128R')                                       00170000
+                ERASE                                                   00171000
+           END-EXEC.                                                    00180000
+       1000-SEND-END.                                                   00190000
+           EXIT.                                                        00200000
+       2000-RECEIVE-PARA.                                               00210000
+           EXEC CICS RECEIVE                                            00220000
+                MAP('REGM')                                             00230000
+                MAPSET('OZA128R')                                       00240000
+           END-EXEC                                                     00250000
+           IF RMI = 'Y'                                                 00260000
+              EXEC CICS LINK                                            00270000
+                   PROGRAM('OZA128T3')                                  00280000
+              END-EXEC                                                  00290000
+           END-IF.                                                      00300000
+       2000-RECEIVE-END.                                                00310000
+           EXIT.                                                        00320000
+       9999-END-PARA.                                                   00330000
+           EXEC CICS RETURN END-EXEC.                                   00340000
+       9999-END.                                                        00350000
+           EXIT.                                                        00360000
+

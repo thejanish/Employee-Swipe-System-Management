@@ -1,0 +1,38 @@
+       IDENTIFICATION DIVISION.                                         00010000
+       PROGRAM-ID. EXIT.                                              00020000
+       DATA DIVISION.                                                   00030000
+       WORKING-STORAGE SECTION.                                         00040000
+           COPY OZA128S.                                                00050000
+           COPY DFHBMSCA.                                               00060000
+           COPY DFHAID.                                                 00070000
+       01 WS-BUFF.                                                      00071000
+          10 WS-KEY PIC X(06).                                          00072000
+          10 WS-DATA PIC X(74).                                         00073000
+       01 WS-COMMAREA.                                                  00074000
+          10 WS-TRANSID     PIC X(04).                                  00075000
+       01 WS-RESP PIC S9(08) COMP.                                      00076000
+        77 WS-FDATE PIC X(10).                                          00077000
+        77 WS-TIME  PIC X(08).                                          00078000
+        77 WS-ABSDT PIC S9(15) COMP.                                    00079000
+       LINKAGE SECTION.                                                 00080000
+       01 DFHCOMMAREA.                                                  00090000
+          10 LS-TRANSID     PIC X(04).                                  00100000
+       PROCEDURE DIVISION.                                              00110000
+       MAIN-PARA.                                                       00120000
+            PERFORM 1000-EXIT-PARA                                      00130000
+            THRU    1000-EXIT-END.                                      00140000
+            PERFORM 9999-END-PARA                                       00150000
+            THRU    9999-END.                                           00160000
+       1000-EXIT-PARA.                                                  00170000
+            EXEC CICS SEND                                              00180000
+                 MAP('EXIT')                                            00190000
+                 MAPSET('OZA128S')                                      00200000
+                 ERASE                                                  00201001
+            END-EXEC.                                                   00210000
+       1000-EXIT-END.                                                   00220000
+            EXIT.                                                       00230000
+       9999-END-PARA.                                                   00325600
+           EXEC CICS RETURN END-EXEC.                                   00325700
+       9999-END.                                                        00325800
+           EXIT.                                                        00325900
+

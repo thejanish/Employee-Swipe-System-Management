@@ -1,0 +1,104 @@
+       IDENTIFICATION DIVISION.                                         00010004
+       PROGRAM-ID. SWIPEO.                                              00020005
+       DATA DIVISION.                                                   00030004
+       WORKING-STORAGE SECTION.                                         00040004
+           COPY OZA128R.                                                00050010
+           COPY DFHBMSCA.                                               00060004
+           COPY DFHAID.                                                 00070004
+       01 WS-BUFF.                                                      00071004
+          10 WS-KEY PIC X(06).                                          00072004
+          10 SP1 PIC X(01) VALUE SPACES.                                00072107
+          10 WS-NAME PIC X(20).                                         00072204
+          10 SP2  PIC X(01) VALUE SPACES.                               00072307
+          10 WS-DATE PIC X(11).                                         00072404
+          10 SP3 PIC X(01) VALUE SPACES.                                00072507
+          10 WS-TIME PIC X(09).                                         00072604
+       01 WS-COMMAREA.                                                  00072704
+          10 WS-TRANSID     PIC X(04).                                  00072804
+       01 WS-RESP PIC S9(08) COMP.                                      00072904
+       77 WS-ABSDT PIC S9(15) COMP.                                     00073004
+       77 WS-FDATE PIC X(10).                                           00074008
+       77 WS-FTIME PIC X(08).                                           00075008
+       LINKAGE SECTION.                                                 00076004
+       01 DFHCOMMAREA.                                                  00077004
+          10 LS-TRANSID     PIC X(04).                                  00078004
+       PROCEDURE DIVISION.                                              00079004
+       MAIN-PARA.                                                       00080004
+             EXEC CICS ASKTIME                                          00090004
+                  ABSTIME(WS-ABSDT)                                     00100004
+             END-EXEC                                                   00110004
+             EXEC CICS FORMATTIME                                       00120004
+                  ABSTIME(WS-ABSDT)                                     00130004
+                  TIME(WS-FTIME)                                        00140004
+                  TIMESEP(':')                                          00140104
+                  DDMMYYYY(WS-FDATE)                                    00140204
+                  DATESEP('/')                                          00140304
+             END-EXEC                                                   00140404
+            MOVE LOW-VALUES TO  SWINI SWINO.                            00140504
+            MOVE 'SWIPE OUT'  TO HEAD1I.                                00140604
+            PERFORM 1000-RECEIVE-PARA                                   00140704
+            THRU    1000-RECEIVE-END.                                   00140804
+       1000-RECEIVE-PARA.                                               00140904
+            EXEC CICS SEND                                              00141004
+                 MAP('SWIN')                                            00142004
+                 MAPSET('OZA128R')                                      00143010
+                 ERASE                                                  00144004
+            END-EXEC.                                                   00145004
+            EXEC CICS RECEIVE                                           00146004
+                 MAP('SWIN')                                            00147004
+                 MAPSET('OZA128R')                                      00148010
+            END-EXEC                                                    00149004
+           MOVE LOW-VALUES TO WS-BUFF.                                  00150004
+            MOVE EIDI    TO WS-KEY.                                     00160009
+            EXEC CICS READ                                              00170009
+                 DATASET('OZA128F1')                                    00180009
+                 INTO(WS-BUFF)                                          00190009
+                 RIDFLD(WS-KEY)                                         00200009
+                 RESP(WS-RESP)                                          00210009
+                 UPDATE                                                 00220009
+                 LENGTH(LENGTH OF WS-BUFF)                              00230009
+            END-EXEC                                                    00240009
+            MOVE NAMEI   TO WS-NAME.                                    00250009
+            MOVE WS-FDATE TO WS-DATE.                                   00260009
+            MOVE WS-FTIME TO WS-TIME.                                   00261009
+            EXEC CICS REWRITE                                           00262009
+                 DATASET('OZA128F1')                                    00263009
+                 FROM(WS-BUFF)                                          00264009
+                 RESP(WS-RESP)                                          00265009
+            END-EXEC.                                                   00266009
+           IF WS-RESP = DFHRESP(NORMAL) THEN                            00270004
+              MOVE 'EMPLOYEE DATA ADDED!' TO MSG2I                      00280004
+              MOVE LOW-VALUES TO LGONI LGONO                            00290004
+              MOVE 'SWIPED OUT SUCCESSFUL' TO HEAD2I                    00300004
+              MOVE WS-KEY TO EMPIDO                                     00310004
+              MOVE WS-NAME TO EMPNAMEO                                  00320004
+              MOVE WS-DATE TO DATE1O                                    00321004
+              MOVE WS-TIME TO TIME1O                                    00322004
+               EXEC CICS SEND                                           00323004
+                    MAP('LGON')                                         00324004
+                    MAPSET('OZA128R')                                   00325010
+                    ERASE                                               00325104
+               END-EXEC                                                 00325204
+               EXEC CICS RECEIVE                                        00325308
+                    MAP('LGON')                                         00325408
+                    MAPSSET('OZA128R')                                  00325510
+               END-EXEC                                                 00325608
+               IF RETURNI = 'Y'                                         00325708
+                  EXEC CICS LINK                                        00325808
+                       PROGRAM('OZA128T')                               00325910
+                  END-EXEC                                              00326008
+              EXEC CICS RETURN END-EXEC                                 00326108
+               END-IF                                                   00326208
+           ELSE                                                         00326404
+              MOVE 'ERROR IN EMP FILE : ' TO MSG2I                      00326504
+              EXEC CICS LINK                                            00326611
+                   PROGRAM('OZA128T5')                                  00326711
+              END-EXEC                                                  00326904
+           END-IF.                                                      00327004
+       1000-RECEIVE-END.                                                00327104
+           EXIT.                                                        00328004
+       9999-END-PARA.                                                   00329004
+           EXEC CICS RETURN END-EXEC.                                   00330004
+       9999-END.                                                        00340004
+           EXIT.                                                        00350004
+

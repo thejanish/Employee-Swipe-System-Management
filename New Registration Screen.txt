@@ -1,0 +1,117 @@
+       IDENTIFICATION DIVISION.                                         00010001
+       PROGRAM-ID. NREG.                                                00020001
+       DATA DIVISION.                                                   00030001
+       WORKING-STORAGE SECTION.                                         00040001
+           COPY OZA128R.                                                00050001
+           COPY DFHBMSCA.                                               00060001
+           COPY DFHAID.                                                 00070001
+       01 WS-BUFF1.                                                     00071001
+          10 WS-KEY   PIC X(06).                                        00072001
+          10 FILLER   PIC X(01).                                        00072101
+          10 WS-NAME  PIC X(20).                                        00072201
+          10 FILLER   PIC X(01).                                        00072301
+          10 WS-PHONE PIC X(10).                                        00072401
+          10 FILLER   PIC X(01).                                        00072501
+          10 WS-DOB   PIC X(10).                                        00072601
+          10 FILLER   PIC X(01).                                        00072701
+          10 WS-DOJ   PIC X(10).                                        00072801
+          10 FILLER   PIC X(20).                                        00072901
+       01 WS-COMMAREA.                                                  00073001
+          10 WS-TRANSID     PIC X(04).                                  00073101
+       01 WS-RESP PIC S9(08) COMP.                                      00073201
+       LINKAGE SECTION.                                                 00076001
+       01 DFHCOMMAREA.                                                  00077001
+          10 LS-TRANSID     PIC X(04).                                  00078001
+       PROCEDURE DIVISION.                                              00079001
+       MAIN-PARA.                                                       00080001
+           MOVE LOW-VALUES TO REGI REGO.                                00081007
+           PERFORM 1000-SEND-PARA                                       00090001
+           THRU    1000-SEND-END.                                       00100001
+           PERFORM 2000-RECEIVE-PARA                                    00101001
+           THRU    2000-RECEIVE-END.                                    00102001
+           PERFORM 9999-END-PARA                                        00103001
+           THRU    9999-END.                                            00104001
+       1000-SEND-PARA.                                                  00110001
+           EXEC CICS SEND                                               00120001
+                MAP('REG')                                              00130006
+                MAPSET('OZA128R')                                       00140001
+                ERASE                                                   00150001
+           END-EXEC.                                                    00160004
+       1000-SEND-END.                                                   00161001
+           EXIT.                                                        00161101
+       2000-RECEIVE-PARA.                                               00162001
+           EXEC CICS RECEIVE                                            00170001
+                MAP('REG')                                              00180006
+                MAPSET('OZA128R')                                       00190001
+           END-EXEC                                                     00200001
+           MOVE LOW-VALUES TO WS-BUFF1                                  00200101
+           MOVE EMPIDRI TO WS-KEY                                       00201001
+           MOVE NAMEI   TO WS-NAME                                      00202001
+           MOVE PHONERI TO WS-PHONE                                     00203001
+           MOVE DOBRI   TO WS-DOB                                       00204001
+           MOVE DOJRI   TO WS-DOJ                                       00205001
+           EXEC CICS WRITE                                              00207001
+                  DATASET('OZA128F3')                                   00208001
+                  FROM(WS-BUFF1)                                        00209001
+                  LENGTH(LENGTH OF WS-BUFF1)                            00209101
+                  RIDFLD(WS-KEY)                                        00209201
+                  RESP(WS-RESP)                                         00209301
+           END-EXEC.                                                    00209401
+           MOVE LOW-VALUES TO WS-BUFF1                                  00209501
+           MOVE EMPIDRI TO WS-KEY                                       00209701
+           EXEC CICS WRITE                                              00209901
+                  DATASET('OZA128F')                                    00210009
+                  FROM(WS-BUFF1)                                        00211001
+                  LENGTH(LENGTH OF WS-BUFF1)                            00212001
+                  RIDFLD(WS-KEY)                                        00213001
+                  RESP(WS-RESP)                                         00214001
+           END-EXEC.                                                    00215001
+           EXEC CICS WRITE                                              00230001
+                  DATASET('OZA128F1')                                   00240009
+                  FROM(WS-BUFF1)                                        00250001
+                  LENGTH(LENGTH OF WS-BUFF1)                            00260001
+                  RIDFLD(WS-KEY)                                        00270001
+                  RESP(WS-RESP)                                         00280001
+            END-EXEC.                                                   00290001
+            IF WS-RESP = DFHRESP(NORMAL) THEN                           00300001
+                   MOVE 'REGISTERED SUCCESSFUL' TO RM1I                 00310010
+                   EXEC CICS SEND                                       00320010
+                        MAP('REG')                                      00330010
+                        MAPSET('OZA128R')                               00331010
+                        ERASE                                           00332010
+                   END-EXEC                                             00340001
+                   EXEC CICS RECEIVE                                    00341010
+                        MAP('REG')                                      00342010
+                        MAPSET('OZA128R')                               00343010
+                        ERASE                                           00344010
+                   END-EXEC                                             00345010
+                   IF EXRI = 'Y'                                        00346012
+                      EXEC CICS LINK                                    00347010
+                             PROGRAM('OZA128T')                         00348010
+                      END-EXEC                                          00349010
+                   END-IF                                               00349110
+               ELSE                                                     00350010
+                   MOVE 'REGISTRATION FAILED' TO RM1I                   00360010
+                   EXEC CICS SEND                                       00391010
+                        MAP('REG')                                      00392010
+                        MAPSET('OZA128R')                               00393010
+                        ERASE                                           00394010
+                   END-EXEC                                             00395010
+                   EXEC CICS RECEIVE                                    00396010
+                        MAP('REG')                                      00397010
+                        MAPSET('OZA128R')                               00398010
+                        ERASE                                           00399010
+                   END-EXEC                                             00399110
+                   IF EXRI = 'Y'                                        00399211
+                      EXEC CICS LINK                                    00399310
+                             PROGRAM('OZA128T')                         00399410
+                      END-EXEC                                          00399510
+                   END-IF                                               00399610
+            END-IF.                                                     00400001
+       2000-RECEIVE-END.                                                00410004
+            EXIT.                                                       00420001
+       9999-END-PARA.                                                   00430001
+            EXEC CICS RETURN END-EXEC.                                  00440005
+       9999-END.                                                        00450001
+            EXIT.                                                       00460001
+

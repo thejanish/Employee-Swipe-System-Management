@@ -1,0 +1,81 @@
+       IDENTIFICATION DIVISION.                                         00010000
+       PROGRAM-ID. KSEQPG.                                              00020000
+       DATA DIVISION.                                                   00030000
+       WORKING-STORAGE SECTION.                                         00040000
+           COPY OZA128R.                                                00060021
+           COPY DFHBMSCA.                                               00070000
+           COPY DFHAID.                                                 00080003
+       01 WS-COMMAREA.                                                  00110000
+          10 WS-TRANSID     PIC X(04).                                  00120000
+       LINKAGE SECTION.                                                 00130000
+       01 DFHCOMMAREA.                                                  00140000
+          10 LS-TRANSID     PIC X(04).                                  00150000
+       PROCEDURE DIVISION.                                              00160000
+       MAIN-PARA.                                                       00170000
+            MOVE LOW-VALUES TO MPAGEI MPAGEO.                           00171003
+      *     IF EIBCALEN = 0                                             00172019
+               PERFORM 1000-SEND-PARA                                   00173010
+               THRU    1000-SEND-END.                                   00174020
+      *        PERFORM 1900-RETURN-PARA                                 00175019
+      *        THRU    1900-RETURN-END                                  00176019
+      *    ELSE                                                         00177019
+               PERFORM 2000-RECEIVE-PARA                                00178010
+               THRU    2000-RECEIVE-END.                                00179020
+               PERFORM 9999-RETURN-PARA                                 00180010
+               THRU    9999-RETURN-END.                                 00190020
+      *     END-IF.                                                     00200019
+       1000-SEND-PARA.                                                  00210012
+            EXEC CICS SEND                                              00220010
+                 MAP('MPAGE')                                           00230010
+                 MAPSET('OZA128R')                                      00240021
+                 ERASE                                                  00250010
+            END-EXEC.                                                   00260010
+       1000-SEND-END.                                                   00270012
+            EXIT.                                                       00280010
+       1900-RETURN-PARA.                                                00290012
+            EXEC CICS RETURN                                            00300010
+                 TRANSID('O128')                                        00310021
+            END-EXEC.                                                   00320010
+       1900-RETURN-END.                                                 00330012
+            EXIT.                                                       00340010
+       2000-RECEIVE-PARA.                                               00350012
+            EXEC CICS SEND                                              00350118
+                 MAP('MPAGE')                                           00350218
+                 MAPSET('OZA128R')                                      00350321
+            END-EXEC                                                    00350418
+            EXEC CICS RECEIVE                                           00351013
+                 MAP('MPAGE')                                           00352013
+                 MAPSET('OZA128R')                                      00353021
+            END-EXEC                                                    00354014
+            EVALUATE OPTIONI                                            00360013
+               WHEN 1                                                   00370013
+                   EXEC CICS LINK                                       00380014
+                       PROGRAM('OZA128T1')                              00390021
+                   END-EXEC                                             00420010
+               WHEN 2                                                   00421015
+                   EXEC CICS LINK                                       00422015
+                       PROGRAM('OZA128T2')                              00423021
+                   END-EXEC                                             00424015
+               WHEN 3                                                   00425121
+                   EXEC CICS LINK                                       00425221
+                       PROGRAM('OZA128T3')                              00425321
+                   END-EXEC                                             00425421
+               WHEN 4                                                   00425521
+                   EXEC CICS LINK                                       00426016
+                       PROGRAM('OZA128T4')                              00427021
+                   END-EXEC                                             00428016
+               WHEN OTHER                                               00430010
+                   MOVE 'INVALID KEY' TO MSG1O                          00440011
+                   EXEC CICS SEND                                       00450011
+                       MAP('MPAGE')                                     00460011
+                       MAPSET('OZA128R')                                00470021
+                       ERASE                                            00480011
+                   END-EXEC                                             00490011
+            END-EVALUATE.                                               00500011
+       2000-RECEIVE-END.                                                00510012
+            EXIT.                                                       00520011
+       9999-RETURN-PARA.                                                00530012
+            EXEC CICS RETURN END-EXEC.                                  00540011
+       9999-RETURN-END.                                                 00550012
+             EXIT.                                                      00560012
+
